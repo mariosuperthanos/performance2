@@ -93,3 +93,43 @@ class App extends Component {
 }
 
 // In this case, the code will only load the other pages when they are clicked
+
+// Make code look cleaner:
+
+// high order component(a component that returns another component):
+export default  function asyncCompoenent(importComponent){
+  class AsyncCompoenent extends Component{
+    constructor(props) {
+      super(props);
+      this.state = {
+        component: null,
+      }
+    }
+
+    // get the JSX data from the other modules
+    async componentDidMount() {
+      const { default: component } = await importComponent();
+      this.setState({
+        component: component,
+      })
+    }
+
+    render() {
+      const Component = this.state.component;
+      return Component ? <Component {...this.props} /> : null;
+    }
+  }
+  return AsyncCompoenent;
+}
+
+// In App.js file instead of onRouteChange method:
+
+if(this.state.route==='page1'){
+        return <Page1 onRouteChange={this.onRouteChange}/>
+      } else if(this.state.route==='page2'){
+        const AsyncPage2 = asyncCompoenent(()=> import('./components/Page2'))
+        return <AsyncPage2 onRouteChange={this.onRouteChange} />
+      } else{  
+        const AsyncPage3 = asyncCompoenent(()=> import('./components/Page3'))
+        return <AsyncPage3 onRouteChange={this.onRouteChange} />
+      }
