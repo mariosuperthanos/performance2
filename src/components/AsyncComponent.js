@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 
+// part 3 - Clener Code splitting
 // high order component(a component that returns another component):
 export default  function asyncCompoenent(importComponent){
   class AsyncCompoenent extends Component{
