@@ -1,0 +1,95 @@
+// With no Code Splitting
+
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      route: 'page1',
+      component: null,
+    }
+  }
+  onRouteChange = (route) => {
+    // No code Splitting:
+    this.setState({route:route});
+  }
+
+  render () {
+    if(this.state.route==='page1'){
+      return <Page1 onRouteChange={this.onRouteChange}/>
+    } else if(this.state.route==='page2'){
+      return <Page2 onRouteChange={this.onRouteChange}/>
+    } else{  
+      return <Page3 onRouteChange={this.onRouteChange}/>
+    }  
+    }
+}
+
+export default App;
+
+// the page1/2/3 components look like:
+
+import React from 'react';
+import favicon from '../favicon.ico';
+
+const Page1 = ({ onRouteChange }) => (
+  <div className='App'>
+    <header>
+      <img src={favicon} className='App-logo' alt='logo'></img>
+      <h1 className='App-title'>Welcome to react</h1>
+    </header>
+    <button onClick={() => onRouteChange('page2')}>Page2</button>
+    <button onClick={() => onRouteChange('page3')}>Page3</button>
+  </div>
+)
+
+export default Page1;
+
+// Now, the components are being imported before the user clicks the button, so it's UNNECESARY and it can reduce the PERFORMANCE
+
+// The code with Code Splitting:
+
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      route: 'page1',
+      component: null,
+    }
+  }
+// dynamic import
+  onRouteChange = (route) => {
+    // No code Splitting:
+    // this.setState({route:route});
+    // With Code Splitting:
+    if(route==='page1') {
+      this.setState({ 
+        route:route,
+      });
+    } else if(route==='page2'){
+      import('./components/Page2').then((Page2) => {
+        console.log(Page2.default);
+        this.setState({ 
+          route:route,
+          component: Page2.default,
+        })
+      })
+    } else if(route==='page3'){
+      import('./components/Page3').then((Page3) => {
+        this.setState({ 
+          route:route,
+          component: Page3.default,
+        })
+      })
+    }
+  }
+  
+  render () {
+    if(this.state.route ==='page1'){
+      return <Page1 onRouteChange={this.onRouteChange} />
+    } else{
+      return <this.state.component onRouteChange={this.onRouteChange} />
+    }
+  }
+}
+
+// In this case, the code will only load the other pages when they are clicked
