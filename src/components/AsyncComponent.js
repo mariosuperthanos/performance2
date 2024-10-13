@@ -23,4 +23,5 @@ export default  function asyncCompoenent(importComponent){
     }
   }
   return AsyncCompoenent;
+  // comment
 }
